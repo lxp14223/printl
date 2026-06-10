@@ -70,8 +70,10 @@ class ImageDetector:
                 roi1 = template[y1:y2, x1:x2]
                 roi2 = comparison_image[y1:y2, x1:x2]
 
-                # 调用检测函数
-                roi_regions, roi_diff, roi_diff_mask = self.detect_defects(roi1, roi2)
+                # 调用检测函数，传入连通域编号以分目录保存中间结果
+                roi_regions, roi_diff, roi_diff_mask = self.detect_defects(
+                    roi1, roi2, cc_id=i
+                )
 
                 if roi_regions is None:
                     continue
@@ -130,7 +132,7 @@ class ImageDetector:
 
         return final_regions, final_diff
 
-    def detect_defects(self, template, matched_region):
+    def detect_defects(self, template, matched_region, cc_id=None):
         """
         图文缺陷检测主函数
 
@@ -139,6 +141,7 @@ class ImageDetector:
         Args:
             template: 模板图像（标准样张）
             matched_region: 待检测图像（对齐后的扫描件）
+            cc_id: 连通域编号，非空时按cc_XXXX分目录保存中间结果
 
         Returns:
             defect_regions: 缺陷区域列表，每个元素包含位置、面积、类型
@@ -175,9 +178,14 @@ class ImageDetector:
                 else matched_region
             )
 
-        # ==================== 步骤2：高斯模糊降噪 ====================
-        template_blur = cv2.GaussianBlur(template_gray, (5, 5), 1)
-        matched_blur = cv2.GaussianBlur(matched_gray, (5, 5), 1)
+        # ==================== 步骤2：中值滤波 ====================
+        template_gray = cv2.medianBlur(template_gray, 3)
+        matched_gray = cv2.medianBlur(matched_gray, 3)
+
+        # ==================== 步骤3：直方图增强 ====================
+        clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(16, 16))
+        template_gray = clahe.apply(template_gray)
+        matched_gray = clahe.apply(matched_gray)
 
         # 保存结果图到imageR文件夹
         output_dir = os.path.join(
@@ -186,12 +194,22 @@ class ImageDetector:
             ),
             "imageR",
         )
+        if cc_id is not None:
+            output_dir = os.path.join(output_dir, f"cc_{cc_id:04d}")
         os.makedirs(output_dir, exist_ok=True)
+
         cv2.imwrite(
-            os.path.join(output_dir, "01_gaussian_blur_template.jpg"), template_blur
+            os.path.join(output_dir, "02_median_filter_template.jpg"), template_gray
         )
         cv2.imwrite(
-            os.path.join(output_dir, "01_gaussian_blur_matched.jpg"), matched_blur
+            os.path.join(output_dir, "02_median_filter_matched.jpg"), matched_gray
+        )
+
+        cv2.imwrite(
+            os.path.join(output_dir, "03_hist_equalize_template.jpg"), template_gray
+        )
+        cv2.imwrite(
+            os.path.join(output_dir, "03_hist_equalize_matched.jpg"), matched_gray
         )
 
         # cv2.imshow("mh:Template", template_blur)
@@ -199,16 +217,16 @@ class ImageDetector:
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-        # ==================== 步骤3：二值化处理 ====================
-        template_binary = binarize_image(template_blur)
-        matched_binary = binarize_image(matched_blur)
+        # ==================== 步骤4：二值化处理 ====================
+        template_binary = binarize_image(template_gray)
+        matched_binary = binarize_image(matched_gray)
 
-        # 保存结果图到imageR文件夹
+        # 二值化处理
         cv2.imwrite(
-            os.path.join(output_dir, "02_binarization_template.jpg"), template_binary
+            os.path.join(output_dir, "04_binarization_template.jpg"), template_binary
         )
         cv2.imwrite(
-            os.path.join(output_dir, "02_binarization_matched.jpg"), matched_binary
+            os.path.join(output_dir, "04_binarization_matched.jpg"), matched_binary
         )
 
         # 显示二值化结果
@@ -217,7 +235,7 @@ class ImageDetector:
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-        # ==================== 步骤4：形态学预处理 ====================
+        # ==================== 步骤6：形态学预处理 ====================
         kernel = np.ones((self.morph_kernel, self.morph_kernel), np.uint8)
         matched_processed = matched_binary.copy()
 
@@ -241,26 +259,26 @@ class ImageDetector:
 
         matched_binary = matched_processed
 
-        # 保存结果图到imageR文件夹
+        # 形态学预处理
         cv2.imwrite(
-            os.path.join(output_dir, "03_morph_preprocess_template.jpg"),
+            os.path.join(output_dir, "06_morph_preprocess_template.jpg"),
             template_binary,
         )
         cv2.imwrite(
-            os.path.join(output_dir, "03_morph_preprocess_matched.jpg"), matched_binary
+            os.path.join(output_dir, "06_morph_preprocess_matched.jpg"), matched_binary
         )
 
-        # ==================== 步骤5：前景提取 ====================
+        # ==================== 步骤7：前景提取 ====================
         template_fg_raw = cv2.bitwise_not(template_binary)
         matched_fg_raw = cv2.bitwise_not(matched_binary)
 
-        # 保存结果图到imageR文件夹
+        # 前景提取
         cv2.imwrite(
-            os.path.join(output_dir, "04_foreground_extraction_template.jpg"),
+            os.path.join(output_dir, "07_foreground_extraction_template.jpg"),
             template_fg_raw,
         )
         cv2.imwrite(
-            os.path.join(output_dir, "04_foreground_extraction_matched.jpg"),
+            os.path.join(output_dir, "07_foreground_extraction_matched.jpg"),
             matched_fg_raw,
         )
 
@@ -270,16 +288,16 @@ class ImageDetector:
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-        # ==================== 步骤6：形态学闭运算 ====================
+        # ==================== 步骤8：形态学闭运算 ====================
         template_fg = cv2.morphologyEx(template_fg_raw, cv2.MORPH_CLOSE, kernel)
         matched_fg = cv2.morphologyEx(matched_fg_raw, cv2.MORPH_CLOSE, kernel)
 
-        # 保存结果图到imageR文件夹
+        # 形态学闭运算
         cv2.imwrite(
-            os.path.join(output_dir, "05_morph_closing_template.jpg"), template_fg
+            os.path.join(output_dir, "08_morph_closing_template.jpg"), template_fg
         )
         cv2.imwrite(
-            os.path.join(output_dir, "05_morph_closing_matched.jpg"), matched_fg
+            os.path.join(output_dir, "08_morph_closing_matched.jpg"), matched_fg
         )
 
         # 显示形态学闭运算
@@ -288,10 +306,10 @@ class ImageDetector:
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-        # ==================== 步骤7：有符号差分计算 ====================
-        signed_diff = template_blur.astype(np.float32) - matched_blur.astype(np.float32)
+        # ==================== 步骤9：有符号差分计算 ====================
+        signed_diff = template_gray.astype(np.float32) - matched_gray.astype(np.float32)
 
-        # ==================== 步骤8：缺陷掩膜生成 ====================
+        # ==================== 步骤10：缺陷掩膜生成 ====================
         overlay = np.zeros(
             (template_fg.shape[0], template_fg.shape[1], 3), dtype=np.uint8
         )
@@ -320,13 +338,13 @@ class ImageDetector:
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-        # ==================== 步骤9：缺陷掩膜清理 ====================
+        # ==================== 步骤11：缺陷掩膜清理 ====================
         diff = self._clean_defect_mask(diff_mask, template_fg, matched_fg)
         # cv2.imshow("diff", diff)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-        # ==================== 步骤10：提取缺陷区域信息 ====================
+        # ==================== 步骤12：提取缺陷区域信息 ====================
         defect_regions = self._extract_defect_regions(diff)
 
         # 12. 合并重叠的检测框

@@ -13,7 +13,7 @@ def _get_dnn_matcher():
             git_path = os.path.join(os.path.dirname(__file__), "..", "git")
             if git_path not in sys.path:
                 sys.path.insert(0, git_path)
-            from point_match_dnn import PointMatch
+            from point_match_dnn import PointMatch  # type: ignore
 
             _dnn_matcher = PointMatch()
             print("深度学习匹配模型加载成功 (SuperPoint+SuperGlue)")
@@ -382,10 +382,10 @@ def binarize_image_enhanced(image, block_size=11, c_value=3, use_clahe=True):
         gray = image
 
     if use_clahe:
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        clahe = cv2.createCLAHE(clipLimit=0.9, tileGridSize=(16, 16))
         gray = clahe.apply(gray)
 
-    blur = cv2.GaussianBlur(gray, (3, 3), 0.5)
+    blur = cv2.GaussianBlur(gray, (7, 7), 1.5)
 
     binary = cv2.adaptiveThreshold(
         blur,
