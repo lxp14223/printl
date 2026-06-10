@@ -807,26 +807,26 @@ class PrintQualityDetector(QMainWindow):
         )
         params_layout.addWidget(self.dnn_align_checkbox, 8, 0, 1, 2)
 
-        # 锐化选项
-        self.sharpen_checkbox = QCheckBox("锐化待检测图片")
+        # 清晰度增强选项
+        self.sharpen_checkbox = QCheckBox("增强待检测图片清晰度")
         self.sharpen_checkbox.setChecked(True)
-        self.sharpen_checkbox.setToolTip("锐化待检测图片，解决图片模糊问题")
+        self.sharpen_checkbox.setToolTip("增强待检测图片清晰度，解决图片模糊问题")
         params_layout.addWidget(self.sharpen_checkbox, 9, 0, 1, 1)
 
-        # 锐化方法选择
-        params_layout.addWidget(QLabel("锐化方法:"), 9, 1)
+        # 增强方法选择
+        params_layout.addWidget(QLabel("增强方法:"), 9, 1)
         self.sharpen_method_combo = QComboBox()
         self.sharpen_method_combo.addItems(
-            ["USM锐化", "拉普拉斯锐化", "组合锐化(降噪+锐化)"]
+            ["高反差保留(推荐)", "USM锐化", "拉普拉斯锐化", "组合锐化(降噪+锐化)"]
         )
-        self.sharpen_method_combo.setCurrentIndex(0)  # 默认USM
+        self.sharpen_method_combo.setCurrentIndex(0)  # 默认高反差保留
         self.sharpen_method_combo.setToolTip(
-            "USM: 效果自然(推荐)\n拉普拉斯: 锐利\n组合: 降噪后锐化"
+            "高反差保留: 保留纹理细节，不放大噪点(推荐)\nUSM: 效果自然\n拉普拉斯: 锐利\n组合: 降噪后锐化"
         )
         params_layout.addWidget(self.sharpen_method_combo, 9, 2)
 
-        # 锐化强度
-        params_layout.addWidget(QLabel("锐化强度:"), 10, 0)
+        # 增强强度
+        params_layout.addWidget(QLabel("增强强度:"), 10, 0)
         self.sharpen_strength_slider = QSlider(Qt.Horizontal)
         self.sharpen_strength_slider.setRange(5, 20)  # 0.5 - 2.0
         self.sharpen_strength_slider.setValue(10)  # 默认1.0
@@ -1215,10 +1215,10 @@ class PrintQualityDetector(QMainWindow):
             dilate_iter=dilate_iter,
         )
 
-        # 设置锐化参数
+        # 设置清晰度增强参数
         sharpen_enable = self.sharpen_checkbox.isChecked()
         sharpen_method_idx = self.sharpen_method_combo.currentIndex()
-        sharpen_methods = ["usm", "laplacian", "combined"]
+        sharpen_methods = ["high_pass", "usm", "laplacian", "combined"]
         sharpen_method = sharpen_methods[sharpen_method_idx]
         sharpen_strength = self.sharpen_strength_slider.value() / 10.0
 

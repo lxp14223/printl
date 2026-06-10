@@ -28,9 +28,11 @@ class DetectionEngine:
         self.detect_text_errors = True
         self.detect_barcodes = True
         self.detect_color_differences = True
-        self.sharpen_scanned = True  # 是否锐化待检测图片
-        self.sharpen_method = "usm"  # 锐化方法: 'laplacian', 'usm', 'combined'
-        self.sharpen_strength = 1.0  # 锐化强度
+        self.sharpen_scanned = True  # 是否增强待检测图片清晰度
+        self.sharpen_method = (
+            "high_pass"  # 增强方法: 'high_pass', 'usm', 'laplacian', 'combined'
+        )
+        self.sharpen_strength = 1.0  # 增强强度
 
     def detect_print_quality(self, template, scanned_image, color_sample_points=None):
         """执行完整的印刷质量检测
@@ -151,13 +153,13 @@ class DetectionEngine:
 
         return detection_result
 
-    def set_sharpen_params(self, enable=True, method="usm", strength=1.0):
-        """设置锐化参数
+    def set_sharpen_params(self, enable=True, method="high_pass", strength=1.0):
+        """设置清晰度增强参数
 
         参数:
-            enable: 是否启用锐化
-            method: 锐化方法 ('laplacian', 'usm', 'combined')
-            strength: 锐化强度 (0.5-2.0)
+            enable: 是否启用清晰度增强
+            method: 增强方法 ('high_pass', 'usm', 'laplacian', 'combined')
+            strength: 增强强度 (0.5-2.0)
         """
         self.sharpen_scanned = enable
         self.sharpen_method = method
