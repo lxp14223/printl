@@ -10,7 +10,7 @@ class ImageDetector:
 
     def __init__(self):
         self.diff_tolerance = 25
-        self.min_area = 4
+        self.min_area = 5
         self.fill_ratio_threshold = 0.05
         self.morph_kernel = 2
         self.erode_iter = 0
@@ -358,8 +358,8 @@ class ImageDetector:
     def _clean_defect_mask(mask, fg1, fg2):
         result = cv2.bitwise_and(mask, fg1)
         result = cv2.bitwise_and(result, cv2.bitwise_not(fg2))
-        result = cv2.morphologyEx(result, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
-        result = cv2.morphologyEx(result, cv2.MORPH_CLOSE, np.ones((2, 2), np.uint8))
+        result = cv2.morphologyEx(result, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+        result = cv2.morphologyEx(result, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
         return result
 
     # 提取缺陷区域信息
@@ -499,7 +499,7 @@ class ImageDetector:
     def set_params(
         self,
         diff_tolerance=30,
-        min_area=10,
+        min_area=20,
         fill_ratio_threshold=0.1,
         morph_kernel=3,
         erode_iter=1,

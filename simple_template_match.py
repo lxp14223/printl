@@ -726,7 +726,7 @@ class TemplateMatchChecker(QMainWindow):
         binary_layout.addWidget(QLabel("二值化块:"))
         self.binary_block_spin = QSpinBox()
         self.binary_block_spin.setRange(5, 51)
-        self.binary_block_spin.setValue(25)
+        self.binary_block_spin.setValue(21)
         self.binary_block_spin.setSingleStep(2)
         binary_layout.addWidget(self.binary_block_spin)
         params_layout.addLayout(binary_layout)
@@ -735,7 +735,7 @@ class TemplateMatchChecker(QMainWindow):
         binary_c_layout.addWidget(QLabel("二值化C:"))
         self.binary_c_spin = QSpinBox()
         self.binary_c_spin.setRange(1, 30)
-        self.binary_c_spin.setValue(12)
+        self.binary_c_spin.setValue(10)
         binary_c_layout.addWidget(self.binary_c_spin)
         params_layout.addLayout(binary_c_layout)
         
@@ -772,7 +772,7 @@ class TemplateMatchChecker(QMainWindow):
         erode_layout.addWidget(QLabel("腐蚀次数:"))
         self.erode_spin = QSpinBox()
         self.erode_spin.setRange(0, 5)
-        self.erode_spin.setValue(0)
+        self.erode_spin.setValue(1)
         erode_layout.addWidget(self.erode_spin)
         params_layout.addLayout(erode_layout)
         
@@ -780,7 +780,7 @@ class TemplateMatchChecker(QMainWindow):
         dilate_layout.addWidget(QLabel("膨胀次数:"))
         self.dilate_spin = QSpinBox()
         self.dilate_spin.setRange(0, 5)
-        self.dilate_spin.setValue(0)
+        self.dilate_spin.setValue(1)
         dilate_layout.addWidget(self.dilate_spin)
         params_layout.addLayout(dilate_layout)
         

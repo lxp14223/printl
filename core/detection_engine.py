@@ -28,11 +28,11 @@ class DetectionEngine:
         self.detect_text_errors = True
         self.detect_barcodes = True
         self.detect_color_differences = True
-        self.sharpen_scanned = False  # 是否增强待检测图片清晰度
+        self.sharpen_scanned = True  # 是否增强待检测图片清晰度
         self.sharpen_method = (
             "high_pass"  # 增强方法: 'high_pass', 'usm', 'laplacian', 'combined'
         )
-        self.sharpen_strength = 0.5  # 增强强度
+        self.sharpen_strength = 1.0  # 增强强度
 
     def detect_print_quality(self, template, scanned_image, color_sample_points=None):
         """执行完整的印刷质量检测
