@@ -3,10 +3,26 @@ import os
 import cv2
 import numpy as np
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QListWidget, QFileDialog, QMessageBox,
-    QGroupBox, QGridLayout, QSlider, QSpinBox, QComboBox, QCheckBox, QDialog,
-    QScrollArea, QFrame, QInputDialog
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QListWidget,
+    QFileDialog,
+    QMessageBox,
+    QGroupBox,
+    QGridLayout,
+    QSlider,
+    QSpinBox,
+    QComboBox,
+    QCheckBox,
+    QDialog,
+    QScrollArea,
+    QFrame,
+    QInputDialog,
 )
 
 from PyQt5.QtGui import QImage, QPixmap, QFont, QPainter, QPen, QColor
@@ -62,12 +78,16 @@ class ColorSelectionDialog(QDialog):
 
         ok_btn = QPushButton("确定")
         ok_btn.clicked.connect(self.accept)
-        ok_btn.setStyleSheet("background-color: #4CAF50; color: white; padding: 8px 20px;")
+        ok_btn.setStyleSheet(
+            "background-color: #4CAF50; color: white; padding: 8px 20px;"
+        )
         button_layout.addWidget(ok_btn)
 
         cancel_btn = QPushButton("取消")
         cancel_btn.clicked.connect(self.reject)
-        cancel_btn.setStyleSheet("background-color: #f44336; color: white; padding: 8px 20px;")
+        cancel_btn.setStyleSheet(
+            "background-color: #f44336; color: white; padding: 8px 20px;"
+        )
         button_layout.addWidget(cancel_btn)
 
         layout.addLayout(button_layout)
@@ -111,11 +131,15 @@ class ColorWidget(QFrame):
 
         self.color_label = QLabel()
         self.color_label.setFixedSize(100, 80)
-        b, g, r = color_info['color']
-        self.color_label.setStyleSheet(f"background-color: rgb({r}, {g}, {b}); border: 1px solid #999;")
+        b, g, r = color_info["color"]
+        self.color_label.setStyleSheet(
+            f"background-color: rgb({r}, {g}, {b}); border: 1px solid #999;"
+        )
         layout.addWidget(self.color_label, alignment=Qt.AlignCenter)
 
-        info_text = f"占比: {color_info['percentage']:.1f}%\n像素: {color_info['count']}"
+        info_text = (
+            f"占比: {color_info['percentage']:.1f}%\n像素: {color_info['count']}"
+        )
         info_label = QLabel(info_text)
         info_label.setAlignment(Qt.AlignCenter)
         info_label.setStyleSheet("font-size: 10px;")
@@ -130,9 +154,13 @@ class ColorWidget(QFrame):
 
     def update_style(self):
         if self.is_selected:
-            self.setStyleSheet("QFrame { background-color: #e3f2fd; border: 3px solid #2196F3; }")
+            self.setStyleSheet(
+                "QFrame { background-color: #e3f2fd; border: 3px solid #2196F3; }"
+            )
         else:
-            self.setStyleSheet("QFrame { background-color: white; border: 1px solid #ccc; }")
+            self.setStyleSheet(
+                "QFrame { background-color: white; border: 1px solid #ccc; }"
+            )
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -164,7 +192,9 @@ class ReplaceColorDialog(QDialog):
         for i, color_info in enumerate(colors):
             color_widget = ColorWidget(color_info, i)
             color_widget.clicked_signal = lambda idx: self.on_color_clicked(idx)
-            color_widget.mousePressEvent = lambda event, idx=i: self.on_color_clicked(idx)
+            color_widget.mousePressEvent = lambda event, idx=i: self.on_color_clicked(
+                idx
+            )
             self.color_items.append(color_widget)
             row = i // 4
             col = i % 4
@@ -184,7 +214,9 @@ class ReplaceColorDialog(QDialog):
 
         self.custom_color_label = QLabel()
         self.custom_color_label.setFixedSize(60, 30)
-        self.custom_color_label.setStyleSheet("background-color: white; border: 1px solid #999;")
+        self.custom_color_label.setStyleSheet(
+            "background-color: white; border: 1px solid #999;"
+        )
         custom_layout.addWidget(self.custom_color_label)
 
         custom_layout.addStretch()
@@ -195,12 +227,16 @@ class ReplaceColorDialog(QDialog):
 
         ok_btn = QPushButton("确定")
         ok_btn.clicked.connect(self.accept)
-        ok_btn.setStyleSheet("background-color: #4CAF50; color: white; padding: 8px 20px;")
+        ok_btn.setStyleSheet(
+            "background-color: #4CAF50; color: white; padding: 8px 20px;"
+        )
         button_layout.addWidget(ok_btn)
 
         cancel_btn = QPushButton("取消")
         cancel_btn.clicked.connect(self.reject)
-        cancel_btn.setStyleSheet("background-color: #f44336; color: white; padding: 8px 20px;")
+        cancel_btn.setStyleSheet(
+            "background-color: #f44336; color: white; padding: 8px 20px;"
+        )
         button_layout.addWidget(cancel_btn)
 
         layout.addLayout(button_layout)
@@ -209,13 +245,14 @@ class ReplaceColorDialog(QDialog):
         for i, item in enumerate(self.color_items):
             if i == index:
                 item.set_selected(True)
-                self.selected_color = item.color_info['color']
+                self.selected_color = item.color_info["color"]
             else:
                 item.set_selected(False)
 
     def choose_custom_color(self):
         from PyQt5.QtWidgets import QColorDialog
         from PyQt5.QtGui import QColor
+
         color = QColorDialog.getColor()
         if color.isValid():
             self.selected_color = (color.blue(), color.green(), color.red())
@@ -235,7 +272,9 @@ def extract_main_colors(image, n_colors=12):
     max_size = 300
     if max(h, w) > max_size:
         scale = max_size / max(h, w)
-        small_image = cv2.resize(image, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+        small_image = cv2.resize(
+            image, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA
+        )
     else:
         small_image = image
 
@@ -249,7 +288,9 @@ def extract_main_colors(image, n_colors=12):
         data = data[indices]
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 2.0)
-    _, labels, centers = cv2.kmeans(data, n_colors, None, criteria, 3, cv2.KMEANS_PP_CENTERS)
+    _, labels, centers = cv2.kmeans(
+        data, n_colors, None, criteria, 3, cv2.KMEANS_PP_CENTERS
+    )
 
     centers = np.uint8(centers)
 
@@ -260,13 +301,15 @@ def extract_main_colors(image, n_colors=12):
     for i, count in zip(unique, counts):
         percentage = (count / total_pixels) * 100
         if percentage > 0.5:
-            colors.append({
-                'color': tuple(centers[i]),
-                'count': int(count),
-                'percentage': percentage
-            })
+            colors.append(
+                {
+                    "color": tuple(centers[i]),
+                    "count": int(count),
+                    "percentage": percentage,
+                }
+            )
 
-    colors.sort(key=lambda x: x['percentage'], reverse=True)
+    colors.sort(key=lambda x: x["percentage"], reverse=True)
 
     return colors
 
@@ -279,10 +322,14 @@ def remove_colors_from_image(image, colors_to_remove, tolerance=20, replace_colo
     mask = np.zeros(image.shape[:2], dtype=np.uint8)
 
     for color_info in colors_to_remove:
-        b, g, r = color_info['color']
+        b, g, r = color_info["color"]
 
-        lower = np.array([max(0, b - tolerance), max(0, g - tolerance), max(0, r - tolerance)])
-        upper = np.array([min(255, b + tolerance), min(255, g + tolerance), min(255, r + tolerance)])
+        lower = np.array(
+            [max(0, b - tolerance), max(0, g - tolerance), max(0, r - tolerance)]
+        )
+        upper = np.array(
+            [min(255, b + tolerance), min(255, g + tolerance), min(255, r + tolerance)]
+        )
 
         print(f"匹配颜色范围: BGR({b}, {g}, {r}) -> 范围[{lower}, {upper}]")
 
@@ -293,9 +340,11 @@ def remove_colors_from_image(image, colors_to_remove, tolerance=20, replace_colo
         mask = cv2.bitwise_or(mask, color_mask)
 
     white_threshold = 220
-    white_mask = cv2.inRange(image,
-                             np.array([white_threshold, white_threshold, white_threshold]),
-                             np.array([255, 255, 255]))
+    white_mask = cv2.inRange(
+        image,
+        np.array([white_threshold, white_threshold, white_threshold]),
+        np.array([255, 255, 255]),
+    )
     white_pixels = np.sum(white_mask > 0)
     print(f"检测到 {white_pixels} 个接近白色的像素，将保护这些像素")
 
@@ -306,9 +355,9 @@ def remove_colors_from_image(image, colors_to_remove, tolerance=20, replace_colo
 
     light_gray_threshold = 200
     light_pixels = np.where(
-        (image[:, :, 0] >= light_gray_threshold) & 
-        (image[:, :, 1] >= light_gray_threshold) & 
-        (image[:, :, 2] >= light_gray_threshold)
+        (image[:, :, 0] >= light_gray_threshold)
+        & (image[:, :, 1] >= light_gray_threshold)
+        & (image[:, :, 2] >= light_gray_threshold)
     )
     if len(light_pixels[0]) > 0:
         print(f"检测到 {len(light_pixels[0])} 个浅色像素，额外保护")
@@ -349,31 +398,37 @@ try:
     from ui.clickable_label import ClickableLabel
     from ui.zoom_compare_dialog import ZoomCompareDialog
 except ImportError:
-    class DetectionEngine:
-        def set_image_detector_params(self, **kwargs): pass
 
-        def set_detection_flags(self, **kwargs): pass
+    class DetectionEngine:
+        def set_image_detector_params(self, **kwargs):
+            pass
+
+        def set_detection_flags(self, **kwargs):
+            pass
 
         def detect_print_quality(self, template, image):
-            return {'image_defects': {'significant_diff': None, 'defect_regions': []}, 'image_alignment': None}
-
+            return {
+                "image_defects": {"significant_diff": None, "defect_regions": []},
+                "image_alignment": None,
+            }
 
     def cv_imread(path):
         return cv2.imread(path)
 
-
     def remove_background(img, point):
         return img, None
 
-
     class ClickableLabel:
-        def __init__(self, *args): pass
-
+        def __init__(self, *args):
+            pass
 
     class ZoomCompareDialog:
-        def __init__(self, *args): pass
+        def __init__(self, *args):
+            pass
 
-        def exec_(self): pass
+        def exec_(self):
+            pass
+
 
 try:
     import fitz
@@ -416,7 +471,9 @@ def pdf_to_image(pdf_path, page_index=0, max_size=2000):
     mat = fitz.Matrix(zoom, zoom)
     pix = page.get_pixmap(matrix=mat, alpha=False)
 
-    img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
+    img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(
+        pix.height, pix.width, pix.n
+    )
 
     if pix.n == 4:
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
@@ -429,6 +486,7 @@ def pdf_to_image(pdf_path, page_index=0, max_size=2000):
 
 class ClickableLabel(QLabel):
     """可点击的标签，用于显示图像"""
+
     clicked = pyqtSignal(int, int)
 
     def __init__(self, parent=None):
@@ -467,9 +525,7 @@ class ClickableLabel(QLabel):
         # 计算缩放
         label_size = self.size()
         scaled_pixmap = pixmap.scaled(
-            label_size,
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
+            label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation
         )
 
         # 计算缩放因子和偏移
@@ -506,6 +562,7 @@ class ClickableLabel(QLabel):
 
 class ROISelectableLabel(ClickableLabel):
     """支持矩形选区的标签"""
+
     roi_selected = pyqtSignal(int, int, int, int)  # x1, y1, x2, y2 (原始图像坐标)
 
     def __init__(self, parent=None):
@@ -670,7 +727,9 @@ class PrintQualityDetector(QMainWindow):
 
         self.main_display_label = ROISelectableLabel()
         self.main_display_label.setAlignment(Qt.AlignCenter)
-        self.main_display_label.setStyleSheet("background-color: #2a2a2a; border: 1px solid #555;")
+        self.main_display_label.setStyleSheet(
+            "background-color: #2a2a2a; border: 1px solid #555;"
+        )
         self.main_display_label.clicked.connect(self.on_main_display_clicked)
         self.main_display_label.roi_selected.connect(self.on_template_roi_selected)
         image_layout.addWidget(self.main_display_label, 1)
@@ -695,7 +754,9 @@ class PrintQualityDetector(QMainWindow):
         params_layout.addWidget(self.diff_tolerance_slider, 0, 1)
         self.diff_tolerance_value = QLabel("15")
         params_layout.addWidget(self.diff_tolerance_value, 0, 2)
-        self.diff_tolerance_slider.valueChanged.connect(lambda val: self.diff_tolerance_value.setText(str(val)))
+        self.diff_tolerance_slider.valueChanged.connect(
+            lambda val: self.diff_tolerance_value.setText(str(val))
+        )
 
         params_layout.addWidget(QLabel("最小缺陷面积:"), 1, 0)
         self.min_area_spin = QSpinBox()
@@ -730,7 +791,9 @@ class PrintQualityDetector(QMainWindow):
 
         params_layout.addWidget(QLabel("检测模式:"), 6, 0)
         self.detection_mode_combo = QComboBox()
-        self.detection_mode_combo.addItems(["全功能检测", "仅图文检测", "仅文本检测", "仅条码检测", "仅色彩检测"])
+        self.detection_mode_combo.addItems(
+            ["全功能检测", "仅图文检测", "仅文本检测", "仅条码检测", "仅色彩检测"]
+        )
         params_layout.addWidget(self.detection_mode_combo, 6, 1)
 
         self.align_checkbox = QCheckBox("自动对齐图像")
@@ -739,29 +802,37 @@ class PrintQualityDetector(QMainWindow):
 
         self.dnn_align_checkbox = QCheckBox("深度学习对齐 (SuperPoint+SuperGlue)")
         self.dnn_align_checkbox.setChecked(True)
-        self.dnn_align_checkbox.setToolTip("使用深度学习特征匹配对齐图像，比传统SIFT更精确，尤其适合小目标和低对比度场景")
+        self.dnn_align_checkbox.setToolTip(
+            "使用深度学习特征匹配对齐图像，比传统SIFT更精确，尤其适合小目标和低对比度场景"
+        )
         params_layout.addWidget(self.dnn_align_checkbox, 8, 0, 1, 2)
-        
+
         # 锐化选项
         self.sharpen_checkbox = QCheckBox("锐化待检测图片")
         self.sharpen_checkbox.setChecked(True)
         self.sharpen_checkbox.setToolTip("锐化待检测图片，解决图片模糊问题")
         params_layout.addWidget(self.sharpen_checkbox, 9, 0, 1, 1)
-        
+
         # 锐化方法选择
         params_layout.addWidget(QLabel("锐化方法:"), 9, 1)
         self.sharpen_method_combo = QComboBox()
-        self.sharpen_method_combo.addItems(["USM锐化", "拉普拉斯锐化", "组合锐化(降噪+锐化)"])
+        self.sharpen_method_combo.addItems(
+            ["USM锐化", "拉普拉斯锐化", "组合锐化(降噪+锐化)"]
+        )
         self.sharpen_method_combo.setCurrentIndex(0)  # 默认USM
-        self.sharpen_method_combo.setToolTip("USM: 效果自然(推荐)\n拉普拉斯: 锐利\n组合: 降噪后锐化")
+        self.sharpen_method_combo.setToolTip(
+            "USM: 效果自然(推荐)\n拉普拉斯: 锐利\n组合: 降噪后锐化"
+        )
         params_layout.addWidget(self.sharpen_method_combo, 9, 2)
-        
+
         # 锐化强度
         params_layout.addWidget(QLabel("锐化强度:"), 10, 0)
         self.sharpen_strength_slider = QSlider(Qt.Horizontal)
         self.sharpen_strength_slider.setRange(5, 20)  # 0.5 - 2.0
         self.sharpen_strength_slider.setValue(10)  # 默认1.0
-        self.sharpen_strength_slider.valueChanged.connect(self.update_sharpen_strength_label)
+        self.sharpen_strength_slider.valueChanged.connect(
+            self.update_sharpen_strength_label
+        )
         params_layout.addWidget(self.sharpen_strength_slider, 10, 1)
         self.sharpen_strength_value = QLabel("1.0")
         params_layout.addWidget(self.sharpen_strength_value, 10, 2)
@@ -796,8 +867,11 @@ class PrintQualityDetector(QMainWindow):
                 self.main_display_label.clear()
         elif mode == "diff":
             self.main_display_label.set_select_mode(False)
-            if 'defect_mask' in self.vis_data and self.vis_data['defect_mask'] is not None:
-                self.main_display_label.set_cv_image(self.vis_data['defect_mask'])
+            if (
+                "defect_mask" in self.vis_data
+                and self.vis_data["defect_mask"] is not None
+            ):
+                self.main_display_label.set_cv_image(self.vis_data["defect_mask"])
             else:
                 self.main_display_label.clear()
 
@@ -814,19 +888,20 @@ class PrintQualityDetector(QMainWindow):
         if not PDF_SUPPORT:
             file_filter = "图像文件 (*.jpg *.jpeg *.png *.bmp)"
 
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "选择模板", ".", file_filter
-        )
+        file_path, _ = QFileDialog.getOpenFileName(self, "选择模板", ".", file_filter)
 
         if not file_path:
             return
 
         ext = os.path.splitext(file_path)[1].lower()
 
-        if ext == '.pdf':
+        if ext == ".pdf":
             if not PDF_SUPPORT:
-                QMessageBox.warning(self, "错误",
-                                    "PDF 支持未启用！\n请安装 PyMuPDF: pip install pymupdf")
+                QMessageBox.warning(
+                    self,
+                    "错误",
+                    "PDF 支持未启用！\n请安装 PyMuPDF: pip install pymupdf",
+                )
                 return
 
             try:
@@ -841,12 +916,15 @@ class PrintQualityDetector(QMainWindow):
                 self.select_roi_btn.setEnabled(True)
 
                 h, w = self.template.shape[:2]
-                QMessageBox.information(self, "成功",
-                                        f"PDF 已加载!\n尺寸: {w}x{h}\n分辨率: 300 DPI\n\n"
-                                        f"操作步骤：\n"
-                                        f"1. 点击\"框选颜色区域\"，框选包含要去除颜色的区域\n"
-                                        f"2. 点击\"提取颜色\"，选择要去除的颜色\n"
-                                        f"3. 点击\"框选模板区域\"，框选最终要用的模板区域")
+                QMessageBox.information(
+                    self,
+                    "成功",
+                    f"PDF 已加载!\n尺寸: {w}x{h}\n分辨率: 300 DPI\n\n"
+                    f"操作步骤：\n"
+                    f'1. 点击"框选颜色区域"，框选包含要去除颜色的区域\n'
+                    f'2. 点击"提取颜色"，选择要去除的颜色\n'
+                    f'3. 点击"框选模板区域"，框选最终要用的模板区域',
+                )
             except Exception as e:
                 QMessageBox.warning(self, "错误", f"PDF 加载失败:\n{str(e)}")
         else:
@@ -854,18 +932,20 @@ class PrintQualityDetector(QMainWindow):
             if self.template is not None:
                 self.template_path = file_path
                 self.pdf_full_image = None
-                self.color_extraction_mode = \
-                    False
+                self.color_extraction_mode = False
                 self.color_extraction_roi = None
                 self.switch_display_mode("template")
                 self.select_color_roi_btn.setEnabled(True)
                 self.extract_color_btn.setEnabled(False)
                 self.select_roi_btn.setEnabled(False)
-                QMessageBox.information(self, "成功",
-                                        f"模板加载成功!\n\n"
-                                        f"操作步骤：\n"
-                                        f"1. 点击\"框选颜色区域\"，框选包含要去除颜色的区域\n"
-                                        f"2. 点击\"提取颜色\"，选择要去除的颜色")
+                QMessageBox.information(
+                    self,
+                    "成功",
+                    f"模板加载成功!\n\n"
+                    f"操作步骤：\n"
+                    f'1. 点击"框选颜色区域"，框选包含要去除颜色的区域\n'
+                    f'2. 点击"提取颜色"，选择要去除的颜色',
+                )
             else:
                 QMessageBox.warning(self, "错误", "无法加载模板图像!")
 
@@ -880,13 +960,16 @@ class PrintQualityDetector(QMainWindow):
         self.switch_display_mode("template")
         self.main_display_label.set_select_mode(True)
 
-        QMessageBox.information(self, "操作提示",
-                                "请在模板图像上框选包含要提取颜色的区域。\n\n"
-                                "操作步骤：\n"
-                                "1. 按住鼠标左键拖拽，框选包含目标颜色的区域\n"
-                                "2. 松开鼠标完成选择\n"
-                                "3. 点击\"提取颜色\"按钮，提取该区域的颜色\n"
-                                "4. 选择要去除的颜色")
+        QMessageBox.information(
+            self,
+            "操作提示",
+            "请在模板图像上框选包含要提取颜色的区域。\n\n"
+            "操作步骤：\n"
+            "1. 按住鼠标左键拖拽，框选包含目标颜色的区域\n"
+            "2. 松开鼠标完成选择\n"
+            '3. 点击"提取颜色"按钮，提取该区域的颜色\n'
+            "4. 选择要去除的颜色",
+        )
 
     def extract_template_colors(self):
         """提取已框选区域的颜色"""
@@ -895,7 +978,9 @@ class PrintQualityDetector(QMainWindow):
             return
 
         if self.color_extraction_roi is None:
-            QMessageBox.warning(self, "提示", "请先点击\"框选颜色区域\"按钮框选要提取颜色的区域!")
+            QMessageBox.warning(
+                self, "提示", '请先点击"框选颜色区域"按钮框选要提取颜色的区域!'
+            )
             return
 
         x1, y1, x2, y2 = self.color_extraction_roi
@@ -919,23 +1004,29 @@ class PrintQualityDetector(QMainWindow):
                     replace_color = replace_dialog.selected_color
 
                     if replace_color is None:
-                        QMessageBox.warning(self, "提示", "未选择替换颜色，将使用自动填充!")
+                        QMessageBox.warning(
+                            self, "提示", "未选择替换颜色，将使用自动填充!"
+                        )
 
                     reply = QMessageBox.question(
-                        self, "确认去除",
+                        self,
+                        "确认去除",
                         f"确定要去除选中的 {selected_count} 种颜色吗？\n"
                         f"这些颜色将在整个模板中被去除，并用选定颜色填充。",
-                        QMessageBox.Yes | QMessageBox.No
+                        QMessageBox.Yes | QMessageBox.No,
                     )
 
                     if reply == QMessageBox.Yes:
                         tolerance, ok = QInputDialog.getInt(
-                            self, "设置颜色容差",
+                            self,
+                            "设置颜色容差",
                             "请输入颜色容差值（0-100）：\n"
                             "值越小，颜色匹配越精确\n"
                             "值越大，匹配的颜色范围越广\n"
                             "建议值：15-30",
-                            value=20, min=0, max=100
+                            value=20,
+                            min=0,
+                            max=100,
                         )
 
                         if not ok:
@@ -946,27 +1037,31 @@ class PrintQualityDetector(QMainWindow):
                             self.template,
                             dialog.selected_colors,
                             tolerance=tolerance,
-                            replace_color=replace_color
+                            replace_color=replace_color,
                         )
                         QApplication.restoreOverrideCursor()
 
                         self.switch_display_mode("template")
 
                         QMessageBox.information(
-                            self, "成功",
+                            self,
+                            "成功",
                             f"已去除 {selected_count} 种颜色!\n"
                             f"使用容差值: {tolerance}\n\n"
-                            f"如需继续去除其他颜色，请再次点击\"框选颜色区域\"。\n"
-                            f"如需框选模板区域，请点击\"框选模板区域\"。"
+                            f'如需继续去除其他颜色，请再次点击"框选颜色区域"。\n'
+                            f'如需框选模板区域，请点击"框选模板区域"。',
                         )
                 else:
-                    QMessageBox.information(self, "提示", "未选择替换颜色，操作已取消。")
+                    QMessageBox.information(
+                        self, "提示", "未选择替换颜色，操作已取消。"
+                    )
             else:
                 QMessageBox.information(self, "提示", "未选择要去除的颜色。")
 
         except Exception as e:
             QApplication.restoreOverrideCursor()
             import traceback
+
             error_msg = f"颜色提取过程中发生错误:\n{str(e)}"
             print(error_msg)
             traceback.print_exc()
@@ -982,8 +1077,11 @@ class PrintQualityDetector(QMainWindow):
         self.switch_display_mode("template")
         self.main_display_label.set_select_mode(True)
 
-        QMessageBox.information(self, "操作提示",
-                                "请在模板图像上按住鼠标左键拖拽，框选模板区域。\n松开鼠标完成选择。")
+        QMessageBox.information(
+            self,
+            "操作提示",
+            "请在模板图像上按住鼠标左键拖拽，框选模板区域。\n松开鼠标完成选择。",
+        )
 
     def on_template_roi_selected(self, x1, y1, x2, y2):
         """处理模板选区完成"""
@@ -1008,9 +1106,12 @@ class PrintQualityDetector(QMainWindow):
             self.color_extraction_roi = (x1, y1, x2, y2)
             self.extract_color_btn.setEnabled(True)
 
-            QMessageBox.information(self, "成功",
-                                    f"颜色区域已选择!\n尺寸: {x2 - x1}x{y2 - y1}\n\n"
-                                    f"请点击\"提取颜色\"按钮提取该区域的颜色。")
+            QMessageBox.information(
+                self,
+                "成功",
+                f"颜色区域已选择!\n尺寸: {x2 - x1}x{y2 - y1}\n\n"
+                f'请点击"提取颜色"按钮提取该区域的颜色。',
+            )
             return
 
         if self.template is None:
@@ -1029,14 +1130,17 @@ class PrintQualityDetector(QMainWindow):
         self.template = cropped
         self.switch_display_mode("template")
 
-        QMessageBox.information(self, "成功",
-                                f"模板区域已选择!\n尺寸: {x2 - x1}x{y2 - y1}")
+        QMessageBox.information(
+            self, "成功", f"模板区域已选择!\n尺寸: {x2 - x1}x{y2 - y1}"
+        )
 
     def load_images(self):
         """从本地加载离线图片"""
         file_paths, _ = QFileDialog.getOpenFileNames(
-            self, "选择待检测图片", ".",
-            "图片文件 (*.jpg *.jpeg *.png *.bmp *.tif *.tiff)"
+            self,
+            "选择待检测图片",
+            ".",
+            "图片文件 (*.jpg *.jpeg *.png *.bmp *.tif *.tiff)",
         )
 
         if not file_paths:
@@ -1087,7 +1191,7 @@ class PrintQualityDetector(QMainWindow):
                 self.current_image = result
                 self.switch_display_mode("current")
                 QMessageBox.information(self, "成功", "当前图像背景已去除!")
-    
+
     def update_sharpen_strength_label(self, value):
         """更新锐化强度标签"""
         strength = value / 10.0
@@ -1108,20 +1212,18 @@ class PrintQualityDetector(QMainWindow):
             fill_ratio_threshold=fill_ratio_threshold,
             morph_kernel=morph_kernel,
             erode_iter=erode_iter,
-            dilate_iter=dilate_iter
+            dilate_iter=dilate_iter,
         )
-        
+
         # 设置锐化参数
         sharpen_enable = self.sharpen_checkbox.isChecked()
         sharpen_method_idx = self.sharpen_method_combo.currentIndex()
-        sharpen_methods = ['usm', 'laplacian', 'combined']
+        sharpen_methods = ["usm", "laplacian", "combined"]
         sharpen_method = sharpen_methods[sharpen_method_idx]
         sharpen_strength = self.sharpen_strength_slider.value() / 10.0
-        
+
         self.detection_engine.set_sharpen_params(
-            enable=sharpen_enable,
-            method=sharpen_method,
-            strength=sharpen_strength
+            enable=sharpen_enable, method=sharpen_method, strength=sharpen_strength
         )
 
         # 设置检测模式
@@ -1134,7 +1236,7 @@ class PrintQualityDetector(QMainWindow):
                 detect_barcodes=True,
                 detect_color_differences=True,
                 align_images=self.align_checkbox.isChecked(),
-                use_dnn_alignment=use_dnn
+                use_dnn_alignment=use_dnn,
             )
         elif mode == 1:  # 仅图文检测
             self.detection_engine.set_detection_flags(
@@ -1143,7 +1245,7 @@ class PrintQualityDetector(QMainWindow):
                 detect_barcodes=False,
                 detect_color_differences=False,
                 align_images=self.align_checkbox.isChecked(),
-                use_dnn_alignment=use_dnn
+                use_dnn_alignment=use_dnn,
             )
         elif mode == 2:  # 仅文本检测
             self.detection_engine.set_detection_flags(
@@ -1152,7 +1254,7 @@ class PrintQualityDetector(QMainWindow):
                 detect_barcodes=False,
                 detect_color_differences=False,
                 align_images=False,
-                use_dnn_alignment=use_dnn
+                use_dnn_alignment=use_dnn,
             )
         elif mode == 3:  # 仅条码检测
             self.detection_engine.set_detection_flags(
@@ -1161,7 +1263,7 @@ class PrintQualityDetector(QMainWindow):
                 detect_barcodes=True,
                 detect_color_differences=False,
                 align_images=False,
-                use_dnn_alignment=use_dnn
+                use_dnn_alignment=use_dnn,
             )
         elif mode == 4:  # 仅色彩检测
             self.detection_engine.set_detection_flags(
@@ -1170,7 +1272,7 @@ class PrintQualityDetector(QMainWindow):
                 detect_barcodes=False,
                 detect_color_differences=True,
                 align_images=self.align_checkbox.isChecked(),
-                use_dnn_alignment=use_dnn
+                use_dnn_alignment=use_dnn,
             )
 
         QMessageBox.information(self, "成功", "参数已应用!")
@@ -1188,36 +1290,45 @@ class PrintQualityDetector(QMainWindow):
         try:
             self.apply_params()
 
-            result = self.detection_engine.detect_print_quality(self.template, self.current_image)
+            result = self.detection_engine.detect_print_quality(
+                self.template, self.current_image
+            )
 
-            if 'image_defects' in result and result['image_defects'].get('significant_diff') is not None:
-                diff = result['image_defects']['significant_diff']
+            if (
+                "image_defects" in result
+                and result["image_defects"].get("significant_diff") is not None
+            ):
+                diff = result["image_defects"]["significant_diff"]
                 diff_color = cv2.cvtColor(diff, cv2.COLOR_GRAY2BGR)
 
-                defect_regions = result['image_defects'].get('defect_regions', [])
+                defect_regions = result["image_defects"].get("defect_regions", [])
                 for defect in defect_regions:
-                    x, y, w, h = defect['rect']
+                    x, y, w, h = defect["rect"]
                     cv2.rectangle(diff_color, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-                self.vis_data['defect_mask'] = diff_color
-                self.vis_data['template'] = self.template
-                self.vis_data['matched_region'] = self.current_image
-                aligned = result['image_alignment']['aligned_image'] if result.get('image_alignment') else None
+                self.vis_data["defect_mask"] = diff_color
+                self.vis_data["template"] = self.template
+                self.vis_data["matched_region"] = self.current_image
+                aligned = (
+                    result["image_alignment"]["aligned_image"]
+                    if result.get("image_alignment")
+                    else None
+                )
                 if aligned is not None and len(aligned.shape) == 2:
                     aligned = cv2.cvtColor(aligned, cv2.COLOR_GRAY2BGR)
-                self.vis_data['aligned_region'] = aligned
-                self.vis_data['defect_regions'] = defect_regions
+                self.vis_data["aligned_region"] = aligned
+                self.vis_data["defect_regions"] = defect_regions
 
                 self.switch_display_mode("diff")
 
                 QMessageBox.information(
-                    self, "检测完成",
-                    f"检测到 {len(defect_regions)} 处差异区域"
+                    self, "检测完成", f"检测到 {len(defect_regions)} 处差异区域"
                 )
             else:
                 QMessageBox.information(self, "检测完成", "未检测到明显差异")
         except Exception as e:
             import traceback
+
             error_msg = f"检测过程中发生错误:\n{str(e)}"
             print(error_msg)
             traceback.print_exc()
@@ -1245,8 +1356,8 @@ class PrintQualityDetector(QMainWindow):
 
             result = self.detection_engine.detect_print_quality(self.template, image)
 
-            if 'image_defects' in result:
-                defects = result['image_defects']['defect_regions']
+            if "image_defects" in result:
+                defects = result["image_defects"]["defect_regions"]
                 total_defects += len(defects)
 
                 # 在列表中标记结果
@@ -1256,26 +1367,30 @@ class PrintQualityDetector(QMainWindow):
                     item.setText(f"{os.path.basename(file_path)} {status}")
 
         QMessageBox.information(
-            self, "批量检测完成",
-            f"共检测 {len(self.image_list)} 张图像\n" +
-            f"发现 {total_defects} 处缺陷"
+            self,
+            "批量检测完成",
+            f"共检测 {len(self.image_list)} 张图像\n" + f"发现 {total_defects} 处缺陷",
         )
 
     def view_details(self):
-        print("self.vis_data['template'],", self.vis_data['template'])
-        print("self.vis_data['matched_region']", self.vis_data['matched_region'])
-        print("self.vis_data.get('aligned_region')", self.vis_data.get('aligned_region'))
-        print("self.vis_data.get('defect_mask')", self.vis_data.get('defect_mask'))
-        print("self.vis_data.get('defect_regions')", self.vis_data.get('defect_regions'))
+        print("self.vis_data['template'],", self.vis_data["template"])
+        print("self.vis_data['matched_region']", self.vis_data["matched_region"])
+        print(
+            "self.vis_data.get('aligned_region')", self.vis_data.get("aligned_region")
+        )
+        print("self.vis_data.get('defect_mask')", self.vis_data.get("defect_mask"))
+        print(
+            "self.vis_data.get('defect_regions')", self.vis_data.get("defect_regions")
+        )
         """查看检测细节"""
-        if 'template' in self.vis_data and 'matched_region' in self.vis_data:
+        if "template" in self.vis_data and "matched_region" in self.vis_data:
             dialog = ZoomCompareDialog(
-                self.vis_data['template'],
-                self.vis_data['matched_region'],
-                aligned_region=self.vis_data.get('aligned_region'),
-                defect_mask=self.vis_data.get('defect_mask'),
-                defect_regions=self.vis_data.get('defect_regions'),
-                parent=self
+                self.vis_data["template"],
+                self.vis_data["matched_region"],
+                aligned_region=self.vis_data.get("aligned_region"),
+                defect_mask=self.vis_data.get("defect_mask"),
+                defect_regions=self.vis_data.get("defect_regions"),
+                parent=self,
             )
             dialog.exec_()
         else:
