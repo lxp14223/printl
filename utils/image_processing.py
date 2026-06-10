@@ -375,7 +375,7 @@ def enhance_image_clarity(image, clahe_clip=2.0, sharpen_strength=0.8):
 """改进的自适应二值化 - 增强对比度，适应不同光照"""
 
 
-def binarize_image_enhanced(image, block_size=11, c_value=3, use_clahe=True):
+def binarize_image_enhanced(image, block_size=25, c_value=10, use_clahe=False):
     if len(image.shape) > 2:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     else:
@@ -385,8 +385,8 @@ def binarize_image_enhanced(image, block_size=11, c_value=3, use_clahe=True):
         clahe = cv2.createCLAHE(clipLimit=0.9, tileGridSize=(16, 16))
         gray = clahe.apply(gray)
 
-    blur = cv2.GaussianBlur(gray, (7, 7), 1.5)
-
+    # blur = cv2.GaussianBlur(gray, (3, 3), 1.5)
+    blur = cv2.medianBlur(gray, 3)
     binary = cv2.adaptiveThreshold(
         blur,
         255,
@@ -402,8 +402,8 @@ def binarize_image_enhanced(image, block_size=11, c_value=3, use_clahe=True):
 """自适应二值化（保持兼容）"""
 
 
-def binarize_image(image, block_size=11, c_value=3):
-    return binarize_image_enhanced(image, block_size, c_value, use_clahe=True)
+def binarize_image(image, block_size=25, c_value=10):
+    return binarize_image_enhanced(image, block_size, c_value, use_clahe=False)
 
 
 """形态学处理"""
