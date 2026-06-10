@@ -177,19 +177,19 @@ class ImageDetector:
         # ==================== 步骤2：高斯模糊降噪 ====================
         template_blur = cv2.GaussianBlur(template_gray, (5, 5), 1)
         matched_blur = cv2.GaussianBlur(matched_gray, (5, 5), 1)
-        # cv2.imshow('mh:Template', template_blur)
-        # cv2.imshow('mh:Matched', matched_blur)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imshow("mh:Template", template_blur)
+        cv2.imshow("mh:Matched", matched_blur)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # ==================== 步骤3：二值化处理 ====================
         template_binary = binarize_image(template_blur)
         matched_binary = binarize_image(matched_blur)
         # 显示二值化结果
-        # cv2.imshow('ezh:Template', template_binary)
-        # cv2.imshow('ezh:Matched', matched_binary)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imshow("ezh:Template", template_binary)
+        cv2.imshow("ezh:Matched", matched_binary)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # ==================== 步骤4：形态学预处理 ====================
         kernel = np.ones((self.morph_kernel, self.morph_kernel), np.uint8)
@@ -198,36 +198,36 @@ class ImageDetector:
             matched_binary = cv2.dilate(
                 matched_binary, kernel, iterations=self.dilate_iter
             )
-            # cv2.imshow('pz:Matched', matched_binary)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
+            cv2.imshow("pz:Matched", matched_binary)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
         # 4a. 腐蚀操作：让线条变细
         if self.erode_iter > 0:
             matched_binary = cv2.erode(
                 matched_binary, kernel, iterations=self.erode_iter
             )
-            # cv2.imshow('fs:Matched', matched_binary)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
+            cv2.imshow("fs:Matched", matched_binary)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
         # ==================== 步骤5：前景提取 ====================
         template_fg_raw = cv2.bitwise_not(template_binary)
         matched_fg_raw = cv2.bitwise_not(matched_binary)
         # 显示前景提取
-        # cv2.imshow('qjtq:Template', template_fg_raw)
-        # cv2.imshow('qjtq:Matched', matched_fg_raw)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imshow("qjtq:Template", template_fg_raw)
+        cv2.imshow("qjtq:Matched", matched_fg_raw)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # ==================== 步骤6：形态学闭运算 ====================
         template_fg = cv2.morphologyEx(template_fg_raw, cv2.MORPH_CLOSE, kernel)
         matched_fg = cv2.morphologyEx(matched_fg_raw, cv2.MORPH_CLOSE, kernel)
         # 显示形态学闭运算
-        # cv2.imshow('xtx:Template', template_fg)
-        # cv2.imshow('xtx:Matched', matched_fg)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imshow("xtx:Template", template_fg)
+        cv2.imshow("xtx:Matched", matched_fg)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # ==================== 步骤7：有符号差分计算 ====================
         signed_diff = template_blur.astype(np.float32) - matched_blur.astype(np.float32)
